@@ -1,0 +1,8 @@
+__tests__
+package-lock.json
+moduleMapping
+node_modules
+output
+Pods
+Podfile.lock
+android/build
