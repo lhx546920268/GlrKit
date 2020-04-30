@@ -5,4 +5,5 @@ node_modules
 output
 Pods
 Podfile.lock
+.idea
 android/build

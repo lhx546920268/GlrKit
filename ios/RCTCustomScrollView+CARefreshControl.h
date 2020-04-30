@@ -19,9 +19,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic, assign) BOOL refreshEnable;
 
-@property(nonatomic, assign) BOOL refreshing;
+@property(nonatomic, readonly) BOOL refreshing;
 
 @property(nonatomic, copy) RCTDirectEventBlock onRefreshCallback;
+
+- (void)stopRefresh;
 
 @end
 

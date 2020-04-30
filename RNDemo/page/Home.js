@@ -1,6 +1,6 @@
 
 import React from 'react';
-import {View, Text, FlatList} from 'react-native';
+import {View, Text, FlatList, UIManager, findNodeHandle} from 'react-native';
 import BasePageComponent, {STATUS_FAIL, STATUS_LOADING} from '../basic/components/BasePageComponent';
 
 export default class Home extends BasePageComponent{
@@ -19,7 +19,7 @@ export default class Home extends BasePageComponent{
         console.log("开始");
     }
 
-    componentDidMount(): void {
+    componentDidMount() {
         // this.setPageStatus(STATUS_FAIL)
     }
 
@@ -30,17 +30,20 @@ export default class Home extends BasePageComponent{
 
         setTimeout(() => {
             console.log("结束下拉刷新");
-            this.setState({
-                refreshing: false,
-            })
+            this._stopRefresh()
         }, 2000);
+    }
+
+    _stopRefresh(){
+
+        UIManager.dispatchViewManagerCommand(findNodeHandle(this.flatList), UIManager.RCTScrollView.Commands.stopRefresh, null)
     }
 
     getContent(){
         return<FlatList style={{flex: 1}} data={this.data}
+                        ref={ref => this.flatList = ref}
                         keyExtractor={(item, index) => index.toString()}
                         refreshEnable={true}
-                        refreshing={this.state.refreshing}
                         onRefreshCallback={() => {
                             this._onRefresh();
                         }}

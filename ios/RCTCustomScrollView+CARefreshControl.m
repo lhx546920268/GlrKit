@@ -17,8 +17,21 @@ static char iosRefreshEnableKey;
 
 @implementation RCTScrollViewManager (CANestedScroll)
 
+RCT_EXPORT_METHOD(stopRefresh:(nonnull NSNumber*) reactTag)
+{
+  [self.bridge.uiManager addUIBlock:
+  ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+    RCTScrollView *view = (RCTScrollView*)viewRegistry[reactTag];
+    
+    if(!view || ![view isKindOfClass:[RCTScrollView class]]) {
+      RCTLogError(@"Cannot find RCTScrollView with tag #%@", reactTag);
+      return;
+    }
+    [view stopRefresh];
+  }];
+}
+
 RCT_EXPORT_VIEW_PROPERTY(refreshEnable, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(refreshing, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onRefreshCallback, RCTDirectEventBlock)
 
 @end
@@ -31,8 +44,7 @@ RCT_EXPORT_VIEW_PROPERTY(onRefreshCallback, RCTDirectEventBlock)
     objc_setAssociatedObject(self, &iosRefreshEnableKey, @(refreshEnable), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     if(refreshEnable){
       self.scrollView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-        
-        NSLog(@"触发下拉刷新了");
+
         if(self.onRefreshCallback){
           self.onRefreshCallback(nil);
         }
@@ -61,6 +73,13 @@ RCT_EXPORT_VIEW_PROPERTY(onRefreshCallback, RCTDirectEventBlock)
     }else{
       [self.scrollView.mj_header endRefreshing];
     }
+  }
+}
+
+- (void)stopRefresh
+{
+  if(self.refreshEnable && self.refreshing){
+    [self.scrollView.mj_header endRefreshing];
   }
 }
 
